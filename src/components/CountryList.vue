@@ -13,10 +13,9 @@
 	<div class="country-list__content-area">
 		<p class="country-list__message" v-if="loading">Carregando países...</p>
 		<p class="country-list__message" v-else-if="error">{{ error }}</p>
-		
 		<ul class="country-list__items" v-else-if="filteredCountries.length">
-			<li class="country-list__item" v-for="country in filteredCountries" :key="country.cca3" >
-				<img class="country-list__flag" :alt="country.flags.alt" :src="country.flags.png" @click="detailsCountry(country)"/>
+			<li class="country-list__item" v-for="country in filteredCountries" :key="country.cca3"  @click="openDetailsCountry(country)">
+				<img class="country-list__flag" :alt="country.flags.alt" :src="country.flags.png"/>
 			
 				<p class="country-list__name">{{ country.name.common }}</p>
 				<p class="country-list__info"><span>Population:</span> {{ country.population.toLocaleString() }} </p>
@@ -28,19 +27,21 @@
 				}}</p>			
 			</li>
 		</ul>
-		
-		<p class="country-list__message" v-else="searchTerm && !filteredCountries.length">
+		<p class="country-list__message" v-else-if="searchTerm && !filteredCountries.length">
 			Nenhum país encontrado para "{{ searchTerm }}".
 		</p>
+		<p class="country-list__message" v-else>Nenhum país encontrado.</p>
 	</div>
+	<CountryDetailModal :country="selectedCountryToOpenModal" @close="closeDetailModal" />
 	</div>
 </template>
 
 <script>
+import CountryDetailModal from './CountryDetailModal.vue'; 
 import axios from 'axios';
 import Fuse from 'fuse.js'; // Para uma pesquisa mais flexível (fuzzy search)
 
-const API_URL = 'https://restcountries.com/v3.1/all';
+const API_URL = 'https://restcountries.com/v3.1';
 
 export default {
 	props: {
@@ -53,25 +54,27 @@ export default {
 		return {
 			countries: [], // Lista de países
 			loading: true, // Estado de carregamento
-			error: null,
+			error: null, // Mensagem de erro
 			fuse: null, // Instância do Fuse.js
 			selectedRegion: null, // Região selecionada
+			selectedCountryToOpenModal: null, // País selecionado para o modal
 		};
+	},
+	components: { 
+		CountryDetailModal,
 	},
 	mounted() {
 		this.searchCountries();
 	},
 	methods: {
-		detailsCountry(country) {
-			console.log(country);
-		},
 		applyRegionFilter(region) {
 			this.selectedRegion = region;
 		},
+
 		async searchCountries() {
 			this.error = null;
 			try {
-				const response = await axios.get(`${API_URL}?fields=name,cca3,flags,population,region,capital,translations`);
+				const response = await axios.get(`${API_URL}/all?fields=name,cca3,flags,population,region,capital,translations`);
 				this.countries = response.data.sort((a, b) =>
 					a.name.common.localeCompare(b.name.common)
 				);
@@ -90,6 +93,25 @@ export default {
 				this.loading = false;
 			}
 		},
+
+		async openDetailsCountry(country) {
+			this.error = null;
+			try {
+				const response = await axios.get(`${API_URL}/name/${country.name.common}?fullText=true`, );
+				this.selectedCountryToOpenModal = response.data[0]; 
+
+				console.log('selectedCountryToOpenModal', this.selectedCountryToOpenModal);
+			} catch (err) {
+				this.error = 'Erro ao buscar países: ' + err.message;
+			} finally {
+				this.loading = false;
+			}
+		},
+
+		closeDetailModal() {
+			this.selectedCountryToOpenModal = null; 
+		},
+	
 	},
 	computed: {
 		availableRegions() {

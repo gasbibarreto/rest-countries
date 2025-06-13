@@ -13,23 +13,25 @@
 	<div class="country-list__content-area">
 		<p class="country-list__message" v-if="loading">Carregando países...</p>
 		<p class="country-list__message" v-else-if="error">{{ error }}</p>
+		
 		<ul class="country-list__items" v-else-if="filteredCountries.length">
-			<li class="country-list__item" v-for="country in filteredCountries" :key="country.cca3">
-				<img class="country-list__flag" :alt="country.flags.alt" :src="country.flags.png" />
-				<p>{{ country.name.common }}</p>
-				<p><span>Population:</span> {{ country.population }} </p>
-				<p>Region: {{ country.region }}</p>
-				<p>Capital: {{
+			<li class="country-list__item" v-for="country in filteredCountries" :key="country.cca3" >
+				<img class="country-list__flag" :alt="country.flags.alt" :src="country.flags.png" @click="detailsCountry(country)"/>
+			
+				<p class="country-list__name">{{ country.name.common }}</p>
+				<p class="country-list__info"><span>Population:</span> {{ country.population.toLocaleString() }} </p>
+				<p class="country-list__info"><span>Region:</span> {{ country.region }}</p>
+				<p class="country-list__info"><span>Capital:</span> {{
 					country.capital && country.capital.length > 0
 						? country.capital[0]
 						: 'Capital não identificada'
-				}}</p>
+				}}</p>			
 			</li>
 		</ul>
-		<p class="country-list__message" v-else-if="searchTerm && !filteredCountries.length">
+		
+		<p class="country-list__message" v-else="searchTerm && !filteredCountries.length">
 			Nenhum país encontrado para "{{ searchTerm }}".
 		</p>
-		<p class="country-list__message" v-else>Nenhum país encontrado.</p>
 	</div>
 	</div>
 </template>
@@ -60,6 +62,9 @@ export default {
 		this.searchCountries();
 	},
 	methods: {
+		detailsCountry(country) {
+			console.log(country);
+		},
 		applyRegionFilter(region) {
 			this.selectedRegion = region;
 		},
@@ -117,14 +122,17 @@ export default {
 	display: flex;
 	justify-content: flex-start;
 	margin-top: 10px;
+	margin-left: 15px;
 }
 
 .country-list__select {
-	width: 150px;
+	width: 200px;
 	padding: 10px;
 	border-radius: 4px;
 	border: 1px solid #ccc;
-	background-color: #f9f9f9;
+	background-color: #fff; /* Fundo branco para um visual mais limpo */
+	font-size: 14px; /* Ajustar tamanho da fonte */
+	color: #333; /* Cor do texto */
 }
 
 .country-list__content-area {
@@ -149,20 +157,32 @@ export default {
 } 
 
 .country-list__item {
-	background-color: #f1f1f1;
+	background-color: rgb(255, 255, 255);
 	border-radius: 5px;
 	flex: 1 1 200px; /* mínimo de 200px por item */
-	max-width: 230px;
-    justify-items: center;
-	padding: 0px 15px 0px 15px;
+	max-width: 280px;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .country-list__flag {
-	width: 260px;
+	width: 100%;
     height: 160px;
 	object-fit: cover;
 	border-radius: 4px;
+}
+
+.country-list__name {
+    padding-left:20px;
+	font-weight: bold;
+	font-size: 18px;
+}
+
+.country-list__info {
+	padding-left: 20px;
+}
+	
+.country-list__info span {
+	font-weight: 600; /* ou bold, se preferir */
 }
 
 @media (min-width: 600px) {

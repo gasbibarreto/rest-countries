@@ -42,6 +42,18 @@ export default {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    background-color: white;
+    padding: 20px 15px; /* Ajuste o padding conforme necessário (vertical, horizontal) */
+    box-sizing: border-box; /* Garante que o padding não aumente a largura total do elemento */
+}
+
+.main-header-container h1{
+    font-size: 14px; /* Ajuste o tamanho da fonte conforme necessário */
+    margin: 0; /* Remove a margem padrão do h1 */
+}
+
+.main-header-container p{
+    font-size: 10px;
 }
 
 .main-header-container.dark-mode-active {

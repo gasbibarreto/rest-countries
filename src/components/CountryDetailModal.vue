@@ -1,16 +1,25 @@
 <template>
   <div class="modal-overlay" v-if="country" @click.self="closeModal">
     <div class="modal-content">
-      <button @click="closeModal" class="close-btn">&times;</button>
+      <button @click="closeModal" class="close-btn">Back</button>
       <div v-if="country">
         <h2>{{ country.name.common }}</h2>
-        <img :src="country.flags.png" :alt="`Bandeira de ${country.name.common}`" class="modal-flag">
-        <p><strong>População:</strong> {{ country.population.toLocaleString() }}</p>
-        <p><strong>Região:</strong> {{ country.region }}</p>
-        <p><strong>Região:</strong> {{ country.region }}</p>
-
+        <img :src="country.flags.png" :alt="`Bandeira de ${country.name.common}`" class="modal-flag" />
+        <p><strong>Native Name:</strong> {{ country.name.official }}</p>
+        <p><strong>Population:</strong> {{ country.population.toLocaleString() }}</p>
+        <p><strong>Region:</strong> {{ country.region }}</p>
+        <p><strong>Sub Region:</strong> {{ country.subregion }}</p>
         <p><strong>Capital:</strong> {{ country.capital && country.capital.length > 0 ? country.capital.join(', ') : 'N/A' }}</p>
-        <!-- Adicione mais detalhes conforme necessário -->
+        <p><strong>Top Level Domain:</strong> {{ country.tld && country.tld.join(', ') }}</p>
+        <p><strong>Currencies:</strong> {{ Object.values(country.currencies || {}).map(c => c.name).join(', ') }}</p>
+        <p><strong>Languages:</strong> {{ Object.values(country.languages || {}).join(', ') }}</p>
+  
+        <p><strong>Borders:</strong> 
+          <span v-if="country.borders && country.borders.length > 0">
+            {{ country.borders.join(', ') }}
+          </span>
+          <span v-else>Nenhuma fronteira terrestre</span>
+        </p>
       </div>
     </div>
   </div>
@@ -72,7 +81,6 @@ const closeModal = () => {
   background: none;
   border: none;
   font-size: 1.8rem;
-  font-weight: bold;
   cursor: pointer;
   color: #555;
 }

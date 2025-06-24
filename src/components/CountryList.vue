@@ -150,7 +150,7 @@ export default {
 .country-list__select {
 	width: 200px;
 	padding: 10px;
-	border-radius: 4px;
+	border-radius: 6px;
 	border: 1px solid #ccc;
 	background-color: #fff; /* Fundo branco para um visual mais limpo */
 	font-size: 14px; /* Ajustar tamanho da fonte */

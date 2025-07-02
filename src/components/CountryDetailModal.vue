@@ -1,100 +1,161 @@
 <template>
-  <div class="modal-overlay" v-if="country" @click.self="closeModal">
-    <div class="modal-content">
-      <button @click="closeModal" class="close-btn">Back</button>
-      <div v-if="country">
-        <h2>{{ country.name.common }}</h2>
-        <img :src="country.flags.png" :alt="`Bandeira de ${country.name.common}`" class="modal-flag" />
-        <p><strong>Native Name:</strong> {{ country.name.official }}</p>
-        <p><strong>Population:</strong> {{ country.population.toLocaleString() }}</p>
-        <p><strong>Region:</strong> {{ country.region }}</p>
-        <p><strong>Sub Region:</strong> {{ country.subregion }}</p>
-        <p><strong>Capital:</strong> {{ country.capital && country.capital.length > 0 ? country.capital.join(', ') : 'N/A' }}</p>
-        <p><strong>Top Level Domain:</strong> {{ country.tld && country.tld.join(', ') }}</p>
-        <p><strong>Currencies:</strong> {{ Object.values(country.currencies || {}).map(c => c.name).join(', ') }}</p>
-        <p><strong>Languages:</strong> {{ Object.values(country.languages || {}).join(', ') }}</p>
-  
-        <p><strong>Borders:</strong> 
-          <span v-if="country.borders && country.borders.length > 0">
-            {{ country.borders.join(', ') }}
-          </span>
-          <span v-else>Nenhuma fronteira terrestre</span>
-        </p>
-      </div>
-    </div>
-  </div>
+	<div class="country-detail" @click.self="closeModal">
+		<button @click="closeModal" class="country-detail__back-button">
+			← Back
+		</button>
+		<div v-if="country">
+			<img
+				:src="country.flags.png"
+				:alt="`Bandeira de ${country.name.common}`"
+				class="country-detail__flag" />
+			<h2 class="country-detail__name">{{ country.name.common }}</h2>
+			<div class="country-detail__info">
+				<p><strong>Native Name:</strong> {{ country.name.official }}</p>
+				<p>
+					<strong>Population:</strong> {{ country.population.toLocaleString() }}
+				</p>
+				<p><strong>Region:</strong> {{ country.region }}</p>
+				<p><strong>Sub Region:</strong> {{ country.subregion }}</p>
+				<p>
+					<strong>Capital:</strong>
+					{{
+						country.capital && country.capital.length > 0
+							? country.capital.join(', ')
+							: 'N/A'
+					}}
+				</p>
+				<p>
+					<strong>Top Level Domain:</strong>
+					{{ country.tld && country.tld.join(', ') }}
+				</p>
+				<p>
+					<strong>Currencies:</strong>
+					{{
+						Object.values(country.currencies || {})
+							.map((c) => c.name)
+							.join(', ')
+					}}
+				</p>
+				<p>
+					<strong>Languages:</strong>
+					{{ Object.values(country.languages || {}).join(', ') }}
+				</p>
+			</div>
+			<div class="country-detail__borders">
+				<h3 class="country-detail__borders-title">Border Countries:</h3>
+				<div class="country-detail__borders-list">
+					<span v-if="country.borders && country.borders.length > 0">
+						{{ country.borders.join(', ') }}
+					</span>
+					<span v-else>Nenhuma fronteira terrestre</span>
+				</div>
+			</div>
+		</div>
+	</div>
 </template>
 
 <script setup>
-import { defineProps, defineEmits } from 'vue';
+import {defineProps, defineEmits} from 'vue';
 
 const props = defineProps({
-  country: {
-    type: Object,
-    default: null,
-  },
+	country: {
+		type: Object,
+		default: null,
+	},
 });
 
 const emit = defineEmits(['close']);
 
 const closeModal = () => {
-  emit('close');
+	emit('close');
 };
 </script>
 
 <style scoped>
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+/* 🌗 Variáveis por tema */
+:root {
+	--bg-color: #fafafa;
+	--text-color: #111;
+	--card-color: #fff;
+	--button-bg: #fff;
+	--button-shadow: rgba(0, 0, 0, 0.1);
+	--border-color: #ccc;
 }
-.modal-content {
-  background-color: #fff;
-  padding: 25px;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-  width: 90%;
-  max-width: 500px;
-  position: relative;
-  color: #333;
+
+[data-theme='dark'] {
+	--bg-color: #202c37;
+	--text-color: #fff;
+	--card-color: #2b3945;
+	--button-bg: #2b3945;
+	--button-shadow: rgba(0, 0, 0, 0.3);
+	--border-color: #444;
 }
-.modal-flag {
-  width: 150px;
-  height: auto;
-  border: 1px solid #eee;
-  margin-bottom: 15px;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+
+/* 📦 Estilo da página de detalhe */
+.country-detail {
+	background-color: var(--bg-color);
+	color: var(--text-color);
+	padding: 24px;
+	font-family: 'Segoe UI', sans-serif;
+	min-height: 100vh;
 }
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 1.8rem;
-  cursor: pointer;
-  color: #555;
+
+.country-detail__back-button {
+	background-color: var(--button-bg);
+	color: var(--text-color);
+	border: none;
+	padding: 8px 24px;
+	margin-bottom: 24px;
+	border-radius: 6px;
+	box-shadow: 0 2px 6px var(--button-shadow);
+	cursor: pointer;
+	font-size: 16px;
 }
-.modal-content h2 {
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #2c3e50;
-  text-align: center;
+
+.country-detail__flag {
+	width: 100%;
+	max-width: 100%;
+	border-radius: 6px;
+	margin-bottom: 24px;
 }
-.modal-content p {
-  margin-bottom: 10px;
-  line-height: 1.6;
+
+.country-detail__name {
+	font-size: 24px;
+	font-weight: 800;
+	margin-bottom: 16px;
 }
-.modal-content p strong {
-  color: #34495e;
+
+.country-detail__info p {
+	font-size: 14px;
+	margin: 6px 0;
+}
+
+.country-detail__borders {
+	margin-top: 24px;
+}
+
+.country-detail__borders-title {
+	font-size: 16px;
+	font-weight: 600;
+	margin-bottom: 12px;
+}
+
+.country-detail__borders-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+}
+
+.country-detail__border {
+	background-color: var(--button-bg);
+	color: var(--text-color);
+	padding: 6px 16px;
+	border-radius: 6px;
+	box-shadow: 0 1px 4px var(--button-shadow);
+	font-size: 14px;
+}
+.country-detail.dark-theme {
+	background-color: var(--bg-color);
+	color: var(--text-color);
 }
 </style>

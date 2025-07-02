@@ -1,49 +1,71 @@
 <template>
-<div class="country-list">
-	<div class="country-list__filter-container">
-		<select
-			class="country-list__select"
-			@change="applyRegionFilter($event.target.value)">
-			<option v-for="region in availableRegions" :key="region">
-				{{ region }}
-			</option>
-			<option value="">Filter by Region</option>
-		</select>
-	</div>
-	<div class="country-list__content-area">
-		<p class="country-list__message" v-if="loading">Carregando países...</p>
-		<p class="country-list__message" v-else-if="error">{{ error }}</p>
-		<ul class="country-list__items" v-else-if="filteredCountries.length">
-			<li class="country-list__item" v-for="country in filteredCountries" :key="country.cca3"  @click="openDetailsCountry(country)">
-				<img class="country-list__flag" :alt="country.flags.alt" :src="country.flags.png"/>
-			
-				<p class="country-list__name">{{ country.name.common }}</p>
-				<p class="country-list__info"><span>Population:</span> {{ country.population.toLocaleString() }} </p>
-				<p class="country-list__info"><span>Region:</span> {{ country.region }}</p>
-				<p class="country-list__info"><span>Capital:</span> {{
-					country.capital && country.capital.length > 0
-						? country.capital[0]
-						: 'Capital não identificada'
-				}}</p>			
-			</li>
-		</ul>
-		<p class="country-list__message" v-else-if="searchTerm && !filteredCountries.length">
-			Nenhum país encontrado para "{{ searchTerm }}".
-		</p>
-		<p class="country-list__message" v-else>Nenhum país encontrado.</p>
-	</div>
-	<CountryDetailModal :country="selectedCountryToOpenModal" @close="closeDetailModal" />
+	<div class="country-list" :class="{'dark-theme': isDarkMode}">
+		<CountryDetailModal
+			v-if="selectedCountryToOpenModal"
+			:country="selectedCountryToOpenModal"
+			@close="closeDetailModal" />
+		<div v-else>
+			<div class="country-list__filter-container">
+				<select
+					class="country-list__select"
+					@change="applyRegionFilter($event.target.value)">
+					<option v-for="region in availableRegions" :key="region">
+						{{ region }}
+					</option>
+					<option value="">Filter by Region</option>
+				</select>
+			</div>
+			<div class="country-list__content-area">
+				<p class="country-list__message" v-if="loading">Carregando países...</p>
+				<p class="country-list__message" v-else-if="error">{{ error }}</p>
+				<ul class="country-list__items" v-else-if="filteredCountries.length">
+					<li
+						class="country-list__item"
+						v-for="country in filteredCountries"
+						:key="country.cca3"
+						@click="openDetailsCountry(country)">
+						<img
+							class="country-list__flag"
+							:alt="country.flags.alt"
+							:src="country.flags.png" />
+
+						<p class="country-list__name">{{ country.name.common }}</p>
+						<p class="country-list__info">
+							<span>Population:</span> {{ country.population.toLocaleString() }}
+						</p>
+						<p class="country-list__info">
+							<span>Region:</span> {{ country.region }}
+						</p>
+						<p class="country-list__info">
+							<span>Capital:</span>
+							{{
+								country.capital && country.capital.length > 0
+									? country.capital[0]
+									: 'Capital não identificada'
+							}}
+						</p>
+					</li>
+				</ul>
+				<p
+					class="country-list__message"
+					v-else-if="searchTerm && !filteredCountries.length">
+					Nenhum país encontrado para "{{ searchTerm }}".
+				</p>
+				<p class="country-list__message" v-else>Nenhum país encontrado.</p>
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
-import CountryDetailModal from './CountryDetailModal.vue'; 
+import CountryDetailModal from './CountryDetailModal.vue';
 import axios from 'axios';
 import Fuse from 'fuse.js'; // Para uma pesquisa mais flexível (fuzzy search)
 
 const API_URL = 'https://restcountries.com/v3.1';
 
 export default {
+	inject: ['isDarkMode'],
 	props: {
 		searchTerm: {
 			type: String,
@@ -60,7 +82,7 @@ export default {
 			selectedCountryToOpenModal: null, // País selecionado para o modal
 		};
 	},
-	components: { 
+	components: {
 		CountryDetailModal,
 	},
 	mounted() {
@@ -74,7 +96,9 @@ export default {
 		async searchCountries() {
 			this.error = null;
 			try {
-				const response = await axios.get(`${API_URL}/all?fields=name,cca3,flags,population,region,capital,translations`);
+				const response = await axios.get(
+					`${API_URL}/all?fields=name,cca3,flags,population,region,capital,translations`
+				);
 				this.countries = response.data.sort((a, b) =>
 					a.name.common.localeCompare(b.name.common)
 				);
@@ -97,10 +121,15 @@ export default {
 		async openDetailsCountry(country) {
 			this.error = null;
 			try {
-				const response = await axios.get(`${API_URL}/name/${country.name.common}?fullText=true`, );
-				this.selectedCountryToOpenModal = response.data[0]; 
+				const response = await axios.get(
+					`${API_URL}/name/${country.name.common}?fullText=true`
+				);
+				this.selectedCountryToOpenModal = response.data[0];
 
-				console.log('selectedCountryToOpenModal', this.selectedCountryToOpenModal);
+				console.log(
+					'selectedCountryToOpenModal',
+					this.selectedCountryToOpenModal
+				);
 			} catch (err) {
 				this.error = 'Erro ao buscar países: ' + err.message;
 			} finally {
@@ -109,9 +138,8 @@ export default {
 		},
 
 		closeDetailModal() {
-			this.selectedCountryToOpenModal = null; 
+			this.selectedCountryToOpenModal = null;
 		},
-	
 	},
 	computed: {
 		availableRegions() {
@@ -140,6 +168,16 @@ export default {
 };
 </script>
 <style>
+.country-list {
+}
+
+/* Seletor corrigido: a classe .dark-theme está no mesmo elemento que .country-list */
+.country-list.dark-theme {
+	background-color: #202c37; /* Cor de fundo global do App.vue para consistência */
+	color: white;
+	min-height: 100vh; /* Garante que o fundo ocupe toda a altura da tela */
+}
+
 .country-list__filter-container {
 	display: flex;
 	justify-content: flex-start;
@@ -157,11 +195,18 @@ export default {
 	color: #333; /* Cor do texto */
 }
 
+/* Estilo para o select no modo escuro */
+.country-list.dark-theme .country-list__select {
+	background-color: #2b3743;
+	color: white;
+	border-color: #2b3743;
+}
+
 .country-list__content-area {
 	display: flex;
 	flex-direction: column; /* Para empilhar mensagens ou a lista */
 	align-items: center; /* Centralizar mensagens ou a lista */
-	margin: 20px 0
+	margin: 20px 0;
 }
 
 .country-list__message {
@@ -170,13 +215,13 @@ export default {
 
 .country-list__items {
 	display: flex;
-  	flex-wrap: wrap;
-  	gap: 30px;
-  	list-style: none;
-  	padding: 0;
-  	margin: 0;
+	flex-wrap: wrap;
+	gap: 30px;
+	list-style: none;
+	padding: 0;
+	margin: 0;
 	justify-content: center;
-} 
+}
 
 .country-list__item {
 	background-color: rgb(255, 255, 255);
@@ -186,15 +231,21 @@ export default {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
+/* Estilo para os cards no modo escuro */
+.country-list.dark-theme .country-list__item {
+	background-color: #2b3743; /* Cor dos elementos do App.vue para consistência */
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional ajustada */
+}
+
 .country-list__flag {
 	width: 100%;
-    height: 160px;
+	height: 160px;
 	object-fit: cover;
 	border-radius: 4px;
 }
 
 .country-list__name {
-    padding-left:20px;
+	padding-left: 20px;
 	font-weight: bold;
 	font-size: 18px;
 }
@@ -202,19 +253,22 @@ export default {
 .country-list__info {
 	padding-left: 20px;
 }
-	
+
 .country-list__info span {
 	font-weight: 600; /* ou bold, se preferir */
 }
 
 @media (min-width: 600px) {
-	.country-list__item{
+	.country-list {
+		margin: 10px 30px;
+	}
+	.country-list__item {
 		display: flex;
 		flex-direction: column;
 		gap: 10px;
 	}
-	.country-list__select {
 
+	.country-list__select {
 	}
 }
 </style>

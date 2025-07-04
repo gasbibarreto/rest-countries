@@ -5,16 +5,28 @@
 			:country="selectedCountryToOpenModal"
 			@close="closeDetailModal" />
 		<div v-else>
-			<div class="country-list__filter-container">
-				<select
-					class="country-list__select"
-					@change="applyRegionFilter($event.target.value)">
-					<option v-for="region in availableRegions" :key="region">
-						{{ region }}
-					</option>
-					<option value="">Filter by Region</option>
-				</select>
+			<div class="country-list__header">
+				<!-- Campo de pesquisa -->
+				<div class="search-container">
+					<font-awesome-icon icon="search" class="search-icon" />
+					<input
+						type="text"
+						v-model="searchTerm"
+						placeholder="Search for a country..." />
+				</div>
+				<!-- Filtro de região -->
+				<div class="country-list__filter-container">
+					<select
+						class="country-list__select"
+						@change="applyRegionFilter($event.target.value)">
+						<option v-for="region in availableRegions" :key="region">
+							{{ region }}
+						</option>
+						<option value="">Filter by Region</option>
+					</select>
+				</div>
 			</div>
+			<!-- Lista de países -->
 			<div class="country-list__content-area">
 				<p class="country-list__message" v-if="loading">Carregando países...</p>
 				<p class="country-list__message" v-else-if="error">{{ error }}</p>
@@ -61,17 +73,12 @@
 import CountryDetailModal from './CountryDetailModal.vue';
 import axios from 'axios';
 import Fuse from 'fuse.js'; // Para uma pesquisa mais flexível (fuzzy search)
+import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 const API_URL = 'https://restcountries.com/v3.1';
 
 export default {
 	inject: ['isDarkMode'],
-	props: {
-		searchTerm: {
-			type: String,
-			default: '',
-		},
-	},
 	data() {
 		return {
 			countries: [], // Lista de países
@@ -80,10 +87,12 @@ export default {
 			fuse: null, // Instância do Fuse.js
 			selectedRegion: null, // Região selecionada
 			selectedCountryToOpenModal: null, // País selecionado para o modal
+			searchTerm: '', // Termo de pesquisa
 		};
 	},
 	components: {
 		CountryDetailModal,
+		FontAwesomeIcon,
 	},
 	mounted() {
 		this.searchCountries();
@@ -168,7 +177,46 @@ export default {
 };
 </script>
 <style>
-.country-list {
+.search-container {
+	position: relative; /* Necessário para posicionar o ícone absolutamente dentro dele */
+	display: flex;
+	justify-content: center;
+	margin: 20px 10px;
+	padding: 0 5px; /* Adiciona um pouco de espaço nas laterais */
+}
+
+.search-container input {
+	width: 100%; /* Ocupa a largura do search-container */
+	max-width: 600px; /* Define uma largura máxima para o input */
+	padding: 12px 15px 12px 40px; /* Ajustado padding-left para o ícone */
+	border: 1px solid #ccc; /* Borda mais visível em fundo claro */
+	border-radius: 4px;
+	box-sizing: border-box; /* Garante que padding e border não aumentem a largura total */
+	font-size: 16px;
+}
+
+.search-container.dark-theme input {
+	background-color: #2b3743;
+	border-color: #2b3743;
+	color: white;
+}
+
+.search-container.dark-theme input::placeholder {
+	color: white;
+}
+
+.search-icon {
+	position: absolute;
+	left: 15px; /* Ajustado para posicionar o ícone dentro do padding do input */
+	top: 50%;
+	transform: translateY(-50%);
+	color: #aaa; /* Cor do ícone mais visível em fundo claro */
+	font-size: 16px; /* Tamanho do ícone */
+	pointer-events: none; /* Impede que o ícone capture eventos de clique */
+}
+
+.search-container.dark-theme .search-icon {
+	color: white;
 }
 
 /* Seletor corrigido: a classe .dark-theme está no mesmo elemento que .country-list */
@@ -187,7 +235,7 @@ export default {
 
 .country-list__select {
 	width: 200px;
-	padding: 10px;
+	padding: 15px;
 	border-radius: 6px;
 	border: 1px solid #ccc;
 	background-color: #fff; /* Fundo branco para um visual mais limpo */
@@ -264,11 +312,24 @@ export default {
 	}
 	.country-list__item {
 		display: flex;
+		flex: 1 1 254px;
 		flex-direction: column;
 		gap: 10px;
 	}
 
-	.country-list__select {
+	.country-list__items{
+		gap: 60px;
+
+	}
+
+	.country-list__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+	
+	.search-container input {
+		width: 400px; /* Aumenta a largura do campo de pesquisa em telas maiores */
 	}
 }
 </style>

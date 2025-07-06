@@ -41,21 +41,24 @@
 							:alt="country.flags.alt"
 							:src="country.flags.png" />
 
-						<p class="country-list__name">{{ country.name.common }}</p>
-						<p class="country-list__info">
-							<span>Population:</span> {{ country.population.toLocaleString() }}
-						</p>
-						<p class="country-list__info">
-							<span>Region:</span> {{ country.region }}
-						</p>
-						<p class="country-list__info">
-							<span>Capital:</span>
-							{{
-								country.capital && country.capital.length > 0
-									? country.capital[0]
-									: 'Capital não identificada'
-							}}
-						</p>
+						<div class="country-list__text-content">
+							<p class="country-list__name">{{ country.name.common }}</p>
+
+							<p class="country-list__info">
+								<span>Population:</span> {{ country.population.toLocaleString() }}
+							</p>
+							<p class="country-list__info">
+								<span>Region:</span> {{ country.region }}
+							</p>
+							<p class="country-list__info">
+								<span>Capital:</span>
+								{{
+									country.capital && country.capital.length > 0
+										? country.capital[0]
+										: 'Capital não identificada'
+								}}
+							</p>
+						</div>
 					</li>
 				</ul>
 				<p
@@ -219,6 +222,9 @@ export default {
 	color: white;
 }
 
+.country-list__text-content {
+	padding: 10px; /* Espaçamento interno uniforme */
+}
 /* Seletor corrigido: a classe .dark-theme está no mesmo elemento que .country-list */
 .country-list.dark-theme {
 	background-color: #202c37; /* Cor de fundo global do App.vue para consistência */
@@ -294,12 +300,14 @@ export default {
 
 .country-list__name {
 	padding-left: 20px;
+	margin-bottom: 20px;
 	font-weight: bold;
 	font-size: 18px;
 }
 
 .country-list__info {
 	padding-left: 20px;
+	font-size: 13px;
 }
 
 .country-list__info span {

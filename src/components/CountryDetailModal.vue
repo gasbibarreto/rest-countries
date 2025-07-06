@@ -60,14 +60,7 @@
 </template>
 
 <script setup>
-import {defineProps, defineEmits} from 'vue';
-
-const props = defineProps({
-	country: {
-		type: Object,
-		default: null,
-	},
-});
+import { defineEmits } from 'vue';
 
 const emit = defineEmits(['close']);
 

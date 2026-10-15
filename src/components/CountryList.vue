@@ -78,7 +78,46 @@ import axios from 'axios';
 import Fuse from 'fuse.js'; // Para uma pesquisa mais flexível (fuzzy search)
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
-const API_URL = 'https://restcountries.com/v3.1';
+const API_URL = 'https://api.restcountries.com';
+const API_KEY = process.env.VUE_APP_API_KEY;
+
+// Função adaptadora: normaliza o formato da API v5 para a estrutura esperada pela aplicação
+function formatCountry(c) {
+	return {
+		cca3: c.codes?.alpha_3 || c.codes?.alpha_2 || c.uuid || '',
+		name: {
+			common: c.names?.common || '',
+			official: c.names?.official || '',
+		},
+		translations: c.names?.translations || {},
+		flags: {
+			png: c.flag?.url_png || '',
+			svg: c.flag?.url_svg || '',
+			alt: c.flag?.description || `Bandeira de ${c.names?.common || ''}`,
+		},
+		population: c.population || 0,
+		region: c.region || '',
+		subregion: c.subregion || '',
+		capital: Array.isArray(c.capitals)
+			? c.capitals.map((cap) => cap.name).filter(Boolean)
+			: [],
+		tld: c.tlds || [],
+		currencies: Array.isArray(c.currencies)
+			? c.currencies.reduce((acc, cur) => {
+				if (cur.code) acc[cur.code] = {name: cur.name, symbol: cur.symbol};
+				return acc;
+			}, {})
+			: {},
+		languages: Array.isArray(c.languages)
+			? c.languages.reduce((acc, lang) => {
+				const key = lang.iso639_1 || lang.bcp47 || lang.name;
+				acc[key] = lang.name;
+				return acc;
+			}, {})
+			: {},
+		borders: c.borders || [],
+	};
+}
 
 export default {
 	inject: ['isDarkMode'],
@@ -106,14 +145,27 @@ export default {
 		},
 
 		async searchCountries() {
+			this.loading = true;
 			this.error = null;
 			try {
-				const response = await axios.get(
-					`${API_URL}/all?fields=name,cca3,flags,population,region,capital,translations`
-				);
-				this.countries = response.data.sort((a, b) =>
-					a.name.common.localeCompare(b.name.common)
-				);
+				const headers = {'Authorization': 'Bearer ' + API_KEY};
+				// A API v5 limita a 100 países por requisição no plano gratuito (total de 254 países)
+				const [res1, res2, res3] = await Promise.all([
+					axios.get(`${API_URL}/countries/v5?offset=0&limit=100`, {headers}),
+					axios.get(`${API_URL}/countries/v5?offset=100&limit=100`, {headers}),
+					axios.get(`${API_URL}/countries/v5?offset=200&limit=100`, {headers}),
+				]);
+
+				const rawCountries = [
+					...(res1.data.data?.objects || []),
+					...(res2.data.data?.objects || []),
+					...(res3.data.data?.objects || []),
+				];
+
+				this.countries = rawCountries
+					.map(formatCountry)
+					.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
 				// Configurar o Fuse.js após buscar os países
 				this.fuse = new Fuse(this.countries, {
 					keys: [
@@ -130,23 +182,10 @@ export default {
 			}
 		},
 
-		async openDetailsCountry(country) {
-			this.error = null;
-			try {
-				const response = await axios.get(
-					`${API_URL}/name/${country.name.common}?fullText=true`
-				);
-				this.selectedCountryToOpenModal = response.data[0];
-
-				console.log(
-					'selectedCountryToOpenModal',
-					this.selectedCountryToOpenModal
-				);
-			} catch (err) {
-				this.error = 'Erro ao buscar países: ' + err.message;
-			} finally {
-				this.loading = false;
-			}
+		openDetailsCountry(country) {
+			// Como o país na API v5 já vem completo com todos os detalhes (capitais, moedas, idiomas, etc.),
+			// não é necessário fazer uma nova requisição HTTP
+			this.selectedCountryToOpenModal = country;
 		},
 
 		closeDetailModal() {
@@ -199,8 +238,8 @@ export default {
 }
 
 .search-container.dark-theme input {
-	background-color: #2b3743;
-	border-color: #2b3743;
+	background-color: var(--color-primary-grey-50);
+	border-color: var(--color-primary-grey-50);
 	color: white;
 }
 
@@ -223,13 +262,13 @@ export default {
 }
 
 .country-list__text-content {
-	padding: 10px; /* Espaçamento interno uniforme */
+	padding: 10px; 
 }
-/* Seletor corrigido: a classe .dark-theme está no mesmo elemento que .country-list */
+
 .country-list.dark-theme {
-	background-color: #202c37; /* Cor de fundo global do App.vue para consistência */
-	color: white;
-	min-height: 100vh; /* Garante que o fundo ocupe toda a altura da tela */
+	background-color: var(--bg-page); 
+	color: var(--text-color);
+	min-height: 100vh; 
 }
 
 .country-list__filter-container {
@@ -244,16 +283,15 @@ export default {
 	padding: 15px;
 	border-radius: 6px;
 	border: 1px solid #ccc;
-	background-color: #fff; /* Fundo branco para um visual mais limpo */
-	font-size: 14px; /* Ajustar tamanho da fonte */
-	color: #333; /* Cor do texto */
+	background-color: #fff; 
+	font-size: 14px; 
+	color: #333; 
 }
 
-/* Estilo para o select no modo escuro */
 .country-list.dark-theme .country-list__select {
-	background-color: #2b3743;
-	color: white;
-	border-color: #2b3743;
+	background-color: var(--bg-element);
+	color: var(--text-color);
+	border-color: var(--shadow-color);
 }
 
 .country-list__content-area {
@@ -278,17 +316,16 @@ export default {
 }
 
 .country-list__item {
-	background-color: rgb(255, 255, 255);
+	background-color: var(--bg-element);
 	border-radius: 5px;
-	flex: 1 1 200px; /* mínimo de 200px por item */
+	flex: 1 1 200px; 
 	max-width: 280px;
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 5px var(--shadow-color);
 }
 
-/* Estilo para os cards no modo escuro */
 .country-list.dark-theme .country-list__item {
-	background-color: #2b3743; /* Cor dos elementos do App.vue para consistência */
-	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra opcional ajustada */
+	background-color: var(--bg-element);
+	box-shadow: 0 2px 5px var(--shadow-color); 
 }
 
 .country-list__flag {
@@ -316,7 +353,8 @@ export default {
 
 @media (min-width: 600px) {
 	.country-list {
-		margin: 10px 30px;
+		width: 95%;
+		margin: 0 auto;
 	}
 	.country-list__item {
 		display: flex;
@@ -334,6 +372,7 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin: 0 auto;
 	}
 	
 	.search-container input {

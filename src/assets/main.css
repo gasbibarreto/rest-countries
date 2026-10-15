@@ -1,0 +1,45 @@
+:root {
+    --breakpoint-mobile: 375px;
+    --breakpoint-tablet: 768px;
+    --breakpoint-desktop: 1440px;
+
+
+    /*Colors*/
+    --bg-page: hsl(0, 0%, 98%);
+    --bg-element: hsl(0, 0%, 100%);
+    --text-color: hsl(200, 15%, 8%);
+    --input-color: hsl(0, 0%, 52%);
+    --shadow-color: rgba(0, 0, 0, 0.06);
+
+    --color-primary-900: hsl(209, 23%, 22%);
+    --color-primary-grey-950: hsl(200, 15%, 8%);
+    --color-primary-grey-400: hsl(0, 0%, 50%);
+    --color-primary-grey-50: hsl(0, 0%, 99%);
+    --color-primary-white: hsl(0, 100%, 100%);
+
+    /*Typography*/
+    --font-family-nunito: 'Nunito Sans', sans-serif;
+    --font-size-homepage-items: 14px;
+    --font-size-detail-page: 16px;
+    --font-weight-300: 300;
+    --font-weight-600: 600;
+    --font-weight-800: 800;
+
+}
+
+/* Quando <html data-theme="dark"> estiver ativo, substitui as variáveis */
+[data-theme='dark'] {
+    --bg-page: hsl(207, 26%, 17%);
+    --bg-element: hsl(209, 23%, 22%);
+    --text-color: hsl(0, 0%, 100%);
+    --input-color: hsl(0, 0%, 100%);
+    --shadow-color: rgba(0, 0, 0, 0.25);
+}
+
+/* O corpo da página simplesmente usa as variáveis! */
+body {
+    background-color: var(--bg-page);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin: 0;
+}

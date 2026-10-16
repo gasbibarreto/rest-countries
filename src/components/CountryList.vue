@@ -10,19 +10,22 @@
 				<div class="search-container">
 					<font-awesome-icon icon="search" class="search-icon" />
 					<input
-						type="text"
+						type="search"
 						v-model="searchTerm"
-						placeholder="Search for a country..." />
+						placeholder="Search for a country..."
+						aria-label="Search for a country"
+						/>
 				</div>
 				<!-- Filtro de região -->
 				<div class="country-list__filter-container">
 					<select
 						class="country-list__select"
+						aria-label="Filter countries by region"
 						@change="applyRegionFilter($event.target.value)">
+						<option value="">Filter by Region</option>
 						<option v-for="region in availableRegions" :key="region">
 							{{ region }}
 						</option>
-						<option value="">Filter by Region</option>
 					</select>
 				</div>
 			</div>
@@ -35,7 +38,12 @@
 						class="country-list__item"
 						v-for="country in filteredCountries"
 						:key="country.cca3"
-						@click="openDetailsCountry(country)">
+						tabindex="0"
+						role="button"
+						:aria-label="`View details for ${country.name.common}`"
+						@click="openDetailsCountry(country)"
+						@keydown.enter="openDetailsCountry(country)"
+						@keydown.space.prevent="openDetailsCountry(country)">
 						<img
 							class="country-list__flag"
 							:alt="country.flags.alt"
@@ -311,7 +319,6 @@ export default {
 	gap: 30px;
 	list-style: none;
 	padding: 0;
-	margin: 0;
 	justify-content: center;
 }
 
@@ -319,7 +326,7 @@ export default {
 	background-color: var(--bg-element);
 	border-radius: 5px;
 	flex: 1 1 200px; 
-	max-width: 280px;
+	max-width: 310px;
 	box-shadow: 0 2px 5px var(--shadow-color);
 }
 

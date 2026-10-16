@@ -43,3 +43,20 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0;
 }
+
+/* Exemplo de foco acessível para teclado sem estragar o clique com mouse */
+button:focus-visible,
+.country-list__item:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #2b3945;
+    outline-offset: 3px;
+}
+
+[data-theme='dark'] button:focus-visible,
+[data-theme='dark'] .country-list__item:focus-visible,
+[data-theme='dark'] input:focus-visible,
+[data-theme='dark'] select:focus-visible {
+    outline: 2px solid #ffffff;
+    outline-offset: 3px;
+}

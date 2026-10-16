@@ -2,7 +2,7 @@
     <div class="header__component">
         <div class="header">
             <h1 class="header__title">Where in the world?</h1>        
-            <button class="header__toggle-theme" @click="toggleDarkMode()">{{ darkMode ? 'Light Mode' : 'Dark Mode' }}</button>
+            <button class="header__toggle-theme" type="button" aria-label="Toggle between light and dark mode" @click="toggleDarkMode()">{{ darkMode ? 'Light Mode' : 'Dark Mode' }}</button>
         </div>
     </div>
 </template>
@@ -55,7 +55,6 @@ mounted() {
 
 
 </script>
-
 <style> 
 .header__component{
     background-color: var(--bg-element);

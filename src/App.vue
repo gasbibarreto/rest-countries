@@ -1,21 +1,10 @@
 <template>
 	<MainHeader />
-	<CountryList />
+	<main>
+		<router-view />
+	</main>
 </template>
 
-<script>
-import CountryList from './components/CountryList.vue';
-import {library} from '@fortawesome/fontawesome-svg-core';
-import {faSearch} from '@fortawesome/free-solid-svg-icons';
+<script setup>
 import MainHeader from './components/MainHeader.vue';
-
-library.add(faSearch);
-
-export default {
-	name: 'App',
-	components: {
-		CountryList,
-		MainHeader,
-	},
-};
 </script>

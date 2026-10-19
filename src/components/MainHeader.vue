@@ -7,53 +7,45 @@
     </div>
 </template>
 
-<script>
-export default {
-    data() {
-    return {
-      darkMode: false,
-    };
-  },
+<script setup>
+import { ref, onMounted } from 'vue';
 
-    methods: {
-  toggleDarkMode() {
-    this.darkMode = !this.darkMode;
-    this.applyTheme();
-  },
+const darkMode = ref(false);
 
-  applyTheme() {
-    const theme = this.darkMode ? 'dark' : 'light';
-    
-    // 1. Altera o atributo na tag <html>
-    document.documentElement.setAttribute('data-theme', theme);
-    
-    // 2. Salva a escolha do usuário no navegador
-    localStorage.setItem('theme', theme);
-  },
+const applyTheme = () => {
+  const theme = darkMode.value ? 'dark' : 'light';
+  
+  // 1. Altera o atributo na tag <html>
+  document.documentElement.setAttribute('data-theme', theme);
+  
+  // 2. Salva a escolha do usuário no navegador
+  localStorage.setItem('theme', theme);
+};
 
-  initializeTheme() {
-    // 1. Verifica se o usuário já visitou o site e salvou um tema
-    const savedTheme = localStorage.getItem('theme');
-    
-    if (savedTheme) {
-      this.darkMode = savedTheme === 'dark';
-    } else {
-      // 2. Se for a primeira visita, verifica se o sistema operacional está em modo escuro
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.darkMode = systemPrefersDark;
-    }
+const toggleDarkMode = () => {
+  darkMode.value = !darkMode.value;
+  applyTheme();
+};
 
-    // Aplica o tema inicial
-    this.applyTheme();
+const initializeTheme = () => {
+  // 1. Verifica se o usuário já visitou o site e salvou um tema
+  const savedTheme = localStorage.getItem('theme');
+  
+  if (savedTheme) {
+    darkMode.value = savedTheme === 'dark';
+  } else {
+    // 2. Se for a primeira visita, verifica se o sistema operacional está em modo escuro
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    darkMode.value = systemPrefersDark;
   }
-},
 
-mounted() {
-  this.initializeTheme();
-}
-}
+  // Aplica o tema inicial
+  applyTheme();
+};
 
-
+onMounted(() => {
+  initializeTheme();
+});
 </script>
 <style> 
 .header__component{

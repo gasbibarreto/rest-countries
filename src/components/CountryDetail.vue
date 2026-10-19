@@ -1,46 +1,52 @@
 <template>
 	<div class="country-detail" @click.self="closeModal">
-		<button @click="closeModal" class="country-detail__back-button">
-			← Back
+		<button @click="closeModal" class="country-detail__back-button" type="button" aria-label="Close country details">
+			Back
 		</button>
 		<div v-if="country" class="country-detail__body">
 			<img
-				:src="country.flags.svg"
-				:alt="`Bandeira de ${country.name.common}`"
-				class="country-detail__flag" />
+				:src="country.flag?.url_svg"
+				:alt="country.flag?.description || `Bandeira de ${country.names?.common}`"
+				class="country-detail__flag" 
+				aria-label="Country flag"
+				/>
 			<div class="country-detail__content">
-				<h2 class="country-detail__name">{{ country.name.common }}</h2>
+				<h2 class="country-detail__name">{{ country.names?.common }}</h2>
 				<div class="country-detail__info">
-					<p><strong>Native Name:</strong> {{ country.name.official }}</p>
+					<p><strong>Native Name:</strong> {{ country.names?.official }}</p>
 					<p>
 						<strong>Population:</strong>
-						{{ country.population.toLocaleString() }}
+						{{ country.population?.toLocaleString() }}
 					</p>
 					<p><strong>Region:</strong> {{ country.region }}</p>
 					<p><strong>Sub Region:</strong> {{ country.subregion }}</p>
 					<p>
 						<strong>Capital:</strong>
 						{{
-							country.capital && country.capital.length > 0
-								? country.capital.join(', ')
+							country.capitals && country.capitals.length > 0
+								? country.capitals.map(c => c.name).join(', ')
 								: 'N/A'
 						}}
 					</p>
 					<p>
 						<strong>Top Level Domain:</strong>
-						{{ country.tld && country.tld.join(', ') }}
+						{{ country.tlds && country.tlds.join(', ') }}
 					</p>
 					<p>
 						<strong>Currencies:</strong>
 						{{
-							Object.values(country.currencies || {})
-								.map((c) => c.name)
-								.join(', ')
+							country.currencies && country.currencies.length > 0
+								? country.currencies.map(c => c.name).join(', ')
+								: 'N/A'
 						}}
 					</p>
 					<p>
 						<strong>Languages:</strong>
-						{{ Object.values(country.languages || {}).join(', ') }}
+						{{
+							country.languages && country.languages.length > 0
+								? country.languages.map(l => l.name).join(', ')
+								: 'N/A'
+						}}
 					</p>
 				</div>
 				<div class="country-detail__borders">
@@ -60,22 +66,38 @@
 </template>
 
 <script setup>
-import {defineProps, defineEmits} from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
-defineProps({
-	country: {
-		type: Object,
-		default: null,
-	},
+const API_URL = 'https://api.restcountries.com';
+const API_KEY = process.env.VUE_APP_API_KEY;
+
+const router = useRouter();
+const route = useRoute();
+
+function closeModal() {
+	router.push('/');
+}
+
+const country = ref(null); 
+
+async function searchCountryByCode(countryCode) {	
+	try {
+		const headers = {'Authorization': 'Bearer ' + API_KEY};
+		const response = await axios.get(`${API_URL}/countries/v5/codes.alpha_3/${countryCode}`, {headers});
+
+		country.value = response.data.data?.objects?.[0] || null;
+		console.log(country.value?.names?.common);
+	} catch (err) {
+		console.error('Erro ao buscar países:', err);
+	}
+}
+
+onMounted(() => {
+	searchCountryByCode(route.params.code);
 });
-
-const emit = defineEmits(['close']);
-
-const closeModal = () => {
-	emit('close');
-};
 </script>
-
 <style scoped>
 /* 🌗 Variáveis por tema */
 :root {

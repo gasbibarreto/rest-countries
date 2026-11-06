@@ -38,13 +38,13 @@
 
 /* O corpo da página simplesmente usa as variáveis! */
 body {
+    font-family: var(--font-family-nunito);
     background-color: var(--bg-page);
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
     margin: 0;
 }
 
-/* Exemplo de foco acessível para teclado sem estragar o clique com mouse */
 button:focus-visible,
 .country-list__item:focus-visible,
 input:focus-visible,

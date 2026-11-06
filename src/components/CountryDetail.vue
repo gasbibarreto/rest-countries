@@ -99,26 +99,6 @@ onMounted(() => {
 });
 </script>
 <style scoped>
-/* 🌗 Variáveis por tema */
-:root {
-	--bg-color: #fafafa;
-	--text-color: #111;
-	--card-color: #fff;
-	--button-bg: #fff;
-	--button-shadow: rgba(0, 0, 0, 0.1);
-	--border-color: #ccc;
-}
-
-[data-theme='dark'] {
-	--bg-color: #202c37;
-	--text-color: #fff;
-	--card-color: #2b3945;
-	--button-bg: #2b3945;
-	--button-shadow: rgba(0, 0, 0, 0.3);
-	--border-color: #444;
-}
-
-/* 📦 Estilo da página de detalhe */
 .country-detail {
 	background-color: var(--bg-color);
 	color: var(--text-color);
@@ -189,11 +169,6 @@ onMounted(() => {
 	border-radius: 6px;
 	box-shadow: 0 1px 4px var(--button-shadow);
 	font-size: 14px;
-}
-
-.country-detail.dark-theme {
-	background-color: var(--bg-color);
-	color: var(--text-color);
 }
 
 @media (min-width: 600px) {

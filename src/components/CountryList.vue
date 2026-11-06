@@ -1,5 +1,5 @@
 <template>
-	<div class="country-list" :class="{'dark-theme': isDarkMode}">
+	<div class="country-list">
 		<CountryDetailModal
 			v-if="selectedCountryToOpenModal"
 			:country="selectedCountryToOpenModal"
@@ -81,16 +81,13 @@
 	</div>
 </template>
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
 import Fuse from 'fuse.js'; // Para uma pesquisa mais flexível (fuzzy search)
 import {FontAwesomeIcon} from '@fortawesome/vue-fontawesome';
 
 const API_URL = 'https://api.restcountries.com';
 const API_KEY = process.env.VUE_APP_API_KEY;
-
-
-const isDarkMode = inject('isDarkMode', ref(false));
 
 const countries = ref([]); // Lista de países
 const loading = ref(true); // Estado de carregamento
@@ -182,20 +179,11 @@ onMounted(() => {
 	width: 100%; /* Ocupa a largura do search-container */
 	max-width: 600px; /* Define uma largura máxima para o input */
 	padding: 12px 15px 12px 40px; /* Ajustado padding-left para o ícone */
-	border: 1px solid #ccc; /* Borda mais visível em fundo claro */
+	border: 1px solid var(--shadow-color); /* Borda mais visível em fundo claro */
 	border-radius: 4px;
 	box-sizing: border-box; /* Garante que padding e border não aumentem a largura total */
 	font-size: 16px;
-}
-
-.search-container.dark-theme input {
-	background-color: var(--color-primary-grey-50);
-	border-color: var(--color-primary-grey-50);
-	color: white;
-}
-
-.search-container.dark-theme input::placeholder {
-	color: white;
+	background-color: var(--bg-element);
 }
 
 .search-icon {
@@ -208,18 +196,8 @@ onMounted(() => {
 	pointer-events: none; /* Impede que o ícone capture eventos de clique */
 }
 
-.search-container.dark-theme .search-icon {
-	color: white;
-}
-
 .country-list__text-content {
 	padding: 10px; 
-}
-
-.country-list.dark-theme {
-	background-color: var(--bg-page); 
-	color: var(--text-color);
-	min-height: 100vh; 
 }
 
 .country-list__filter-container {
@@ -237,12 +215,6 @@ onMounted(() => {
 	background-color: #fff; 
 	font-size: 14px; 
 	color: #333; 
-}
-
-.country-list.dark-theme .country-list__select {
-	background-color: var(--bg-element);
-	color: var(--text-color);
-	border-color: var(--shadow-color);
 }
 
 .country-list__content-area {
@@ -271,11 +243,6 @@ onMounted(() => {
 	flex: 1 1 200px; 
 	max-width: 310px;
 	box-shadow: 0 2px 5px var(--shadow-color);
-}
-
-.country-list.dark-theme .country-list__item {
-	background-color: var(--bg-element);
-	box-shadow: 0 2px 5px var(--shadow-color); 
 }
 
 .country-list__flag {

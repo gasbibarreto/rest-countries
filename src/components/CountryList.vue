@@ -23,7 +23,10 @@
 						aria-label="Filter countries by region"
 						@change="applyRegionFilter($event.target.value)">
 						<option value="">Filter by Region</option>
-						<option v-for="region in availableRegions" :key="region">
+						<option 
+							class="country-list__select__option"
+							v-for="region in availableRegions"
+							:key="region">
 							{{ region }}
 						</option>
 					</select>
@@ -207,14 +210,35 @@ onMounted(() => {
 	margin-left: 15px;
 }
 
+.country-list__filter-container {
+  position: relative;
+  display: inline-block;
+  width: 250px;
+}
+
 .country-list__select {
-	width: 200px;
-	padding: 15px;
-	border-radius: 6px;
-	border: 1px solid #ccc;
-	background-color: #fff; 
+	appearance: base-select;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 10px 40px 10px 15px;
+	margin: 0 auto;
+	background-color: var(--bg-element); 
 	font-size: 14px; 
-	color: #333; 
+	color: var(--text-color);
+	border-color: var(--bg-element);
+	cursor: pointer;
+	outline: none;
+}
+
+.country-list__select option {
+	background-color: var(--bg-element); 
+	color: var(--text-color);
+}
+
+.country-list__select option:checked {
+  background-color: red;
+  color: #fff;
 }
 
 .country-list__content-area {

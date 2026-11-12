@@ -25,6 +25,8 @@
     --font-weight-600: 600;
     --font-weight-800: 800;
 
+    color-scheme: light;
+
 }
 
 /* Quando <html data-theme="dark"> estiver ativo, substitui as variáveis */
@@ -34,6 +36,8 @@
     --text-color: hsl(0, 0%, 100%);
     --input-color: hsl(0, 0%, 100%);
     --shadow-color: rgba(0, 0, 0, 0.25);
+
+    color-scheme: dark;
 }
 
 /* O corpo da página simplesmente usa as variáveis! */
@@ -47,16 +51,14 @@ body {
 
 button:focus-visible,
 .country-list__item:focus-visible,
-input:focus-visible,
-select:focus-visible {
+input:focus-visible {
     outline: 2px solid #2b3945;
     outline-offset: 3px;
 }
 
 [data-theme='dark'] button:focus-visible,
 [data-theme='dark'] .country-list__item:focus-visible,
-[data-theme='dark'] input:focus-visible,
-[data-theme='dark'] select:focus-visible {
+[data-theme='dark'] input:focus-visible {
     outline: 2px solid #ffffff;
     outline-offset: 3px;
 }
